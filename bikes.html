@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header Part -->
+      <div class="header">
+        <!-- left -->
+        <div class="left">
+          <a href="index.html">IrisRental</a>
+        </div>
+        <!-- middle -->
+        <div class="middle">
+          <div class="navigation">
+            <span><a href="index.html">Home</a></span>
+            <span><a href="bikes.html">Our Bikes</a></span>
+            <span><a href="contact.html">Contact</a></span>
+          </div>
+          <div class="search">
+            <input type="text" placeholder="search for bikes..." />
+            <img
+              src="images/search.png"
+              alt="search"
+              width="20px"
+              height="20px"
+            />
+          </div>
+        </div>
+        <!-- right -->
+        <div class="right">
+          <img
+            src="images/account.png"
+            alt="login"
+            height="25px"
+            width="25px"
+          />
+          <a href="">Login/Register</a>
+        </div>
+      </div>
+      <!-- Content Part -->
+      <div class="content">
+        <div class="bikes">
+          <p>Search for a rental bike</p>
+          <div class="rentTime">
+            <input type="text" placeholder="14.9.2024" />
+            <span>to</span>
+            <input type="text" placeholder="22.9.2024" />
+          </div>
+          <div class="bikeTypes">
+            <div class="bikeType">
+              <label for="classic">Classic</label>
+              <input type="radio" />
+            </div>
+            <div class="bikeType">
+              <label for="eClassic">E-Classic</label>
+              <input type="radio" />
+            </div>
+            <div class="bikeType">
+              <label for="Mountain">Mountain</label>
+              <input type="radio" />
+            </div>
+            <div class="bikeType">
+              <label for="eMountain">E-Mountain</label>
+              <input type="radio" />
+            </div>
+          </div>
+          <button>Search</button>
+        </div>
+
+        <!-- Right Content -->
+        <div class="bikesContainer">
+          <h2>Bikes</h2>
+          <div class="bikesAll"></div>
+          <div id="popup_overlay"></div>
+          <script>
+            fetch(`https://www.cc.puv.fi/~hmh/fed/fedApi/bikes/`)
+              .then((response) => {
+                if (!response.ok) {
+                  throw new Error(`Http error! status: ${response.status}`);
+                }
+                return response.json();
+              })
+              .then((allBikes) => {
+                console.log("All bikes: ", allBikes);
+
+                const bikesContainer = document.querySelector(".bikesAll");
+
+                allBikes.forEach((bike) => {
+                  const bikeDiv = document.createElement("div");
+                  bikeDiv.classList.add("bikeDiv");
+
+                  const bikeImg = document.createElement("img");
+                  bikeDiv.classList.add("bikeImg");
+                  bikeImg.src = bike.img_url;
+
+                  const bikeName = document.createElement("span");
+                  bikeName.classList.add("name");
+                  bikeName.textContent = bike.model;
+
+                  const bikeInfo = document.createElement("alert");
+                  bikeInfo.classList.add("info");
+                  bikeInfo.hidden = true;
+
+                  const popupOverlay = document.getElementById("popup_overlay");
+
+                  const bikeDetails = `
+            <h2>${bike.model}</h2>
+            <span>Manufacture: ${bike.manuf}</span>
+            <span>Gear: ${bike.gear}</span>
+            <span>Gear Manufacture: ${bike.gear_manuf}</span>
+            <span>Size: ${bike.size}</span>
+            <span>Detauks: ${bike.details}</span>
+            <span>Manufacture: ${bike.manuf}</span>
+            `;
+                  bikeInfo.innerHTML = bikeDetails;
+
+                  bikeDiv.appendChild(bikeImg);
+                  bikeDiv.appendChild(bikeName);
+                  bikeDiv.appendChild(bikeInfo);
+
+                  bikeDiv.addEventListener("click", function () {
+                    if (bikeInfo.hidden) {
+                      bikeInfo.hidden = false;
+                      popupOverlay.style.display = "flex";
+                    } else {
+                      bikeInfo.hidden = true;
+                      popupOverlay.style.display = "none";
+                    }
+                  });
+
+                  bikesContainer.appendChild(bikeDiv);
+                });
+              })
+              .catch((error) => {
+                console.error("error fetching bikes: ", error);
+              });
+          </script>
+        </div>
+      </div>
+
+      <!-- Bottom Part -->
+      <div class="bottom">
+        <p>&copy; 2024 Palosaari Bike Rentals</p>
+      </div>
+    </div>
+  </body>
+</html>
